@@ -66,6 +66,15 @@ add_subdirectory(mbed-os)
 # This will compile an elf file named the same as the project with the given source files.
 add_executable(${PROJECT_NAME} main.cpp)
 
+# Convert output to hex and binary
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.hex
+)
+
+# Convert to bin file -> add conditional check?
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin
+)
 ######################################################################################################
 ### Link libraries block
 #[[For more about this configuration visit wiki page MbedOS-configuration
@@ -89,6 +98,14 @@ endif()
 mbed_set_post_build(${PROJECT_NAME})
 #[[ Note: if you wish to use a custom linker script instead of the default Mbed one for
    your target, you can do that with mbed_set_post_build(${PROJECT_NAME} path/to/linker_script.ld) ]]
+
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin
+)
+
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_PROJECT_NAME}.bin D:/
+)
 
 ### End of block
 ######################################################################################################
